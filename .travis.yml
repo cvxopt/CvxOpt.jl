@@ -22,8 +22,8 @@ notifications:
   email: false
 
 before_script:
-  # downgrade to conda-forge SuiteSparse 4.5.3 to avoid problems with 4.5.4
-  - julia -e 'using Conda; Conda.add("suitesparse==4.5.3")'
+  # Install conda-forge SuiteSparse 4.5.3 to avoid problems with 4.5.4
+  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("suitesparse==4.5.3")'
 
 after_success:
   # push coverage results to Coveralls
