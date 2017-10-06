@@ -20,10 +20,6 @@ env:
 notifications:
   email: false
 
-before_script:
-  # Install conda-forge SuiteSparse 4.5.3 to avoid problems with 4.5.4
-  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add_channel("conda-forge"); Conda.add("suitesparse==4.5.3")'
-
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("CVXOPT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
