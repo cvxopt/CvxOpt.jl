@@ -5,7 +5,7 @@ let
        -4e-3  0.0   2.5e-3  0.0;
         0.0   0.0   0.0     0.0];
   pbar = [.12, .10, .07, .03];
-  G = -eye(n);
+  G = sparse(1:n,1:n,-ones(Float64,n));
   h = zeros(n);
   A = ones(1,n);
   b = [1.0];

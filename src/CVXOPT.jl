@@ -1,6 +1,7 @@
 "CVXOPT.jl - a Julia interface to CVXOPT"
 module CVXOPT
 using PyCall
+using SparseArrays
 
 const cvxopt = PyNULL()
 const solvers = PyNULL()
@@ -31,7 +32,7 @@ function conelp(c,G,h,dims;A=[],b=[],options=Dict())
   bp = julia_to_cvxopt(b);
 
   # Convert 'dims' and 'options' dictionaries to Python dictionaries
-  py_dims = py"{'l':$(dims[\"l\"]),'q':list($(dims[\"q\"])),'s':list($(dims[\"s\"]))}"o;
+  py_dims = py"{'l':int($(dims[\"l\"])),'q':[int(i) for i in $(dims[\"q\"])],'s':[int(i) for i in $(dims[\"s\"])]}"o;
   py_opts = PyObject(options);
 
   # Call cvxopt.solvers.conelp()
@@ -65,7 +66,7 @@ function coneqp(P,q,G,h,dims;A=[],b=[],options=Dict())
   bp = julia_to_cvxopt(b);
 
   # Convert 'dims' and 'options' dictionaries to Python dictionaries
-  py_dims = py"{'l':$(dims[\"l\"]),'q':list($(dims[\"q\"])),'s':list($(dims[\"s\"]))}"o;
+  py_dims = py"{'l':int($(dims[\"l\"])),'q':[int(i) for i in $(dims[\"q\"])],'s':[int(i) for i in $(dims[\"s\"])]}"o;
   py_opts = PyObject(options);
 
   # Call cvxopt.solvers.coneqp()
@@ -162,8 +163,8 @@ function socp(c,Gl,hl,Gq,hq;A=[],b=[],options=Dict())
   Ap = julia_to_cvxopt(A);
   bp = julia_to_cvxopt(b);
 
-  Gqp = Array{Any,1}(length(Gq));
-  hqp = Array{Any,1}(length(hq));
+  Gqp = Array{Any,1}(undef,length(Gq));
+  hqp = Array{Any,1}(undef,length(hq));
   for i = 1:length(Gq)
     Gqp[i] = julia_to_cvxopt(Gq[i]);
     hqp[i] = julia_to_cvxopt(hq[i]);
@@ -207,8 +208,8 @@ function sdp(c, Gl, hl, Gs, hs; A=[], b=[], options=Dict())
   Ap = julia_to_cvxopt(A);
   bp = julia_to_cvxopt(b);
 
-  Gsp = Array{Any,1}(length(Gs));
-  hsp = Array{Any,1}(length(hs));
+  Gsp = Array{Any,1}(undef,length(Gs));
+  hsp = Array{Any,1}(undef,length(hs));
   for i = 1:length(Gs)
     Gsp[i] = julia_to_cvxopt(Gs[i]);
     hsp[i] = julia_to_cvxopt(hs[i]);
@@ -246,13 +247,13 @@ function julia_to_cvxopt(A)
   if issparse(A)
     J = zeros(Int64, length(A.rowval));
     for i = 1:size(A,2)
-      J[A.colptr[i]:A.colptr[i+1]-1] = i;
+      J[A.colptr[i]:A.colptr[i+1]-1] .= i;
     end
-    Ap = cvxopt[:spmatrix](PyVector(A.nzval),PyVector(A.rowval-1),PyVector(J-1),(size(A,1),size(A,2)));
+    Ap = cvxopt[:spmatrix](PyVector(A.nzval),PyVector(A.rowval.-1),PyVector(J.-1),(size(A,1),size(A,2)));
   elseif isempty(A)
     Ap = pybuiltin("None");
   else
-    Ap = cvxopt[:matrix](A);
+    Ap = cvxopt[:matrix](copy(A));
   end
   return Ap;
 end

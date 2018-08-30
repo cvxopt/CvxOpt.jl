@@ -1,5 +1,6 @@
 using CVXOPT
-using Base.Test
+using SparseArrays
+using Test
 
 include("test1.jl")
 include("test2.jl")
