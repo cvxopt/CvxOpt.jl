@@ -73,10 +73,18 @@ function coneqp(P,q,G,h,dims;A=[],b=[],options=Dict())
   sol = solvers[:coneqp](Pp,qp,Gp,hp,py_dims,A=Ap,b=bp,options=py_opts);
 
   # Convert solution to Julia arrays
-  sol["x"] = cvxopt_to_julia(sol["x"])
-  sol["s"] = cvxopt_to_julia(sol["s"])
-  sol["z"] = cvxopt_to_julia(sol["z"])
-  sol["y"] = cvxopt_to_julia(sol["y"])
+  if sol["status"] == "optimal"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  elseif sol["status"] == "dual infeasible"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+  elseif sol["status"] == "primal infeasible"
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  end
 
   return sol;
 end
@@ -105,10 +113,18 @@ function lp(c,G,h;A=[],b=[],options=Dict())
   sol = solvers[:lp](cp,Gp,hp;A=Ap,b=bp,options=py_opts);
 
   # Convert solution to Julia arrays
-  sol["x"] = cvxopt_to_julia(sol["x"])
-  sol["s"] = cvxopt_to_julia(sol["s"])
-  sol["z"] = cvxopt_to_julia(sol["z"])
-  sol["y"] = cvxopt_to_julia(sol["y"])
+  if sol["status"] == "optimal"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  elseif sol["status"] == "dual infeasible"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+  elseif sol["status"] == "primal infeasible"
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  end
 
   return sol;
 end
@@ -138,10 +154,18 @@ function qp(P,q,G,h;A=[],b=[],options=Dict())
   sol = solvers[:qp](Pp,qp,Gp,hp,A=Ap,b=bp,options=py_opts);
 
   # Convert solution to Julia arrays
-  sol["x"] = cvxopt_to_julia(sol["x"])
-  sol["s"] = cvxopt_to_julia(sol["s"])
-  sol["z"] = cvxopt_to_julia(sol["z"])
-  sol["y"] = cvxopt_to_julia(sol["y"])
+  if sol["status"] == "optimal"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  elseif sol["status"] == "dual infeasible"
+    sol["s"] = cvxopt_to_julia(sol["s"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+  elseif sol["status"] == "primal infeasible"
+    sol["z"] = cvxopt_to_julia(sol["z"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+  end
 
   return sol;
 end
@@ -179,13 +203,27 @@ function socp(c,Gl,hl,Gq,hq;A=[],b=[],options=Dict())
   sol = solvers[:socp](cp, Gl=Glp, hl=hlp, Gq=Gqp, hq=hqp, A=Ap, b=bp, options=py_opts);
 
   # Convert solution to Julia arrays
-  sol["x"] = cvxopt_to_julia(sol["x"]);
-  sol["y"] = cvxopt_to_julia(sol["y"]);
-  sol["sl"] = cvxopt_to_julia(sol["sl"]);
-  sol["zl"] = cvxopt_to_julia(sol["zl"]);
-  for i = 1:length(Gq)
-    sol["sq"][i] = cvxopt_to_julia(sol["sq"][i]);
-    sol["zq"][i] = cvxopt_to_julia(sol["zq"][i]);
+  if sol["status"] == "optimal"
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+    sol["sl"] = cvxopt_to_julia(sol["sl"]);
+    sol["zl"] = cvxopt_to_julia(sol["zl"]);
+    for i = 1:length(Gq)
+      sol["sq"][i] = cvxopt_to_julia(sol["sq"][i]);
+      sol["zq"][i] = cvxopt_to_julia(sol["zq"][i]);
+    end
+  elseif sol["status"] == "dual infeasible"
+    sol["sl"] = cvxopt_to_julia(sol["sl"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    for i = 1:length(Gq)
+      sol["sq"][i] = cvxopt_to_julia(sol["sq"][i]);
+    end
+  elseif sol["status"] == "primal infeasible"
+    sol["zl"] = cvxopt_to_julia(sol["zl"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+    for i = 1:length(Gq)
+      sol["zq"][i] = cvxopt_to_julia(sol["zq"][i]);
+    end
   end
 
   return sol;
@@ -224,13 +262,27 @@ function sdp(c, Gl, hl, Gs, hs; A=[], b=[], options=Dict())
   sol = solvers[:sdp](cp, Gl=Glp, hl=hlp, Gs=Gsp, hs=hsp, A=Ap, b=bp, options=py_opts);
 
   # Convert solution to Julia arrays
-  sol["x"] = cvxopt_to_julia(sol["x"]);
-  sol["y"] = cvxopt_to_julia(sol["y"]);
-  sol["sl"] = cvxopt_to_julia(sol["sl"]);
-  sol["zl"] = cvxopt_to_julia(sol["zl"]);
-  for i = 1:length(Gs)
-    sol["ss"][i] = cvxopt_to_julia(sol["ss"][i]);
-    sol["zs"][i] = cvxopt_to_julia(sol["zs"][i]);
+  if sol["status"] == "optimal"
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+    sol["sl"] = cvxopt_to_julia(sol["sl"]);
+    sol["zl"] = cvxopt_to_julia(sol["zl"]);
+    for i = 1:length(Gs)
+      sol["ss"][i] = cvxopt_to_julia(sol["ss"][i]);
+      sol["zs"][i] = cvxopt_to_julia(sol["zs"][i]);
+    end
+  elseif sol["status"] == "dual infeasible"
+    sol["sl"] = cvxopt_to_julia(sol["sl"])
+    sol["x"] = cvxopt_to_julia(sol["x"])
+    for i = 1:length(Gs)
+      sol["ss"][i] = cvxopt_to_julia(sol["ss"][i]);
+    end
+  elseif sol["status"] == "primal infeasible"
+    sol["zl"] = cvxopt_to_julia(sol["zl"])
+    sol["y"] = cvxopt_to_julia(sol["y"])
+    for i = 1:length(Gs)
+      sol["zs"][i] = cvxopt_to_julia(sol["zs"][i]);
+    end
   end
 
   return sol
