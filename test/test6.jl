@@ -1,4 +1,5 @@
 let
+  using SparseArrays
   n = 4;
   S = [ 4e-2  6e-3 -4e-3    0.0;
         6e-3  1e-2  0.0     0.0;
@@ -13,4 +14,5 @@ let
   # Compute trade-off.
   mu = 0.1;
   sol = CVXOPT.qp(mu*S, -pbar, G, h, A=A, b=b)
+  @test ( sol["status"] == "optimal" )
 end

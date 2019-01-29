@@ -305,7 +305,7 @@ function julia_to_cvxopt(A)
   elseif isempty(A)
     Ap = pybuiltin("None");
   else
-    Ap = cvxopt[:matrix](copy(A));
+    Ap = cvxopt[:matrix](Matrix(A'));
   end
   return Ap;
 end
