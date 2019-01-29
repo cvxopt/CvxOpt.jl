@@ -21,6 +21,10 @@ env:
 notifications:
   email: false
 
+before_install:
+  # Prevent failure because conda up-/downgrades Python after installing PyCall 
+  - julia -e 'Pkg.add("Conda"); using Conda; Conda.add("cvxopt")'
+
 after_success:
   # push coverage results to Coveralls
   - julia -e 'cd(Pkg.dir("CVXOPT")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
