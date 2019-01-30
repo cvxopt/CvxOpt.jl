@@ -305,7 +305,11 @@ function julia_to_cvxopt(A)
   elseif isempty(A)
     Ap = pybuiltin("None");
   else
-    Ap = cvxopt[:matrix](Matrix(A'));
+    sA = size(A)
+    if length(sA) == 1
+      sA = (sA[1],1)
+    end
+    Ap = cvxopt[:matrix](A[:],sA);
   end
   return Ap;
 end
