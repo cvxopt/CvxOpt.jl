@@ -235,12 +235,6 @@ function convert(::Type{T}, A::PyObject) where T<:AbstractSparseMatrixCSC
                             vec(A.CCS[1])::Vector{Int64} .+ 1,
                             vec(A.CCS[2])::Vector{Int64} .+ 1,
                             vec(A.CCS[3])::Vector{Float64})::SparseMatrixCSC{Float64, Int64}
-    elseif A.typecode == "i"
-        r = SparseMatrixCSC(A.size[1], A.size[2],
-                            vec(A.CCS[1])::Vector{Int64} .+ 1,
-                            vec(A.CCS[2])::Vector{Int64} .+ 1,
-                            vec(A.CCS[3])::Vector{Int64})::SparseMatrixCSC{Int64, Int64}
-
     elseif A.typecode == "z"
         r = SparseMatrixCSC(A.size[1], A.size[2],
                             vec(A.CCS[1])::Vector{Int64} .+ 1,
