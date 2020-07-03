@@ -245,7 +245,7 @@ function convert(::Type{T}, A::PyObject) where T<:AbstractSparseMatrixCSC
         r = SparseMatrixCSC(A.size[1], A.size[2],
                             vec(A.CCS[1])::Vector{Int64} .+ 1,
                             vec(A.CCS[2])::Vector{Int64} .+ 1,
-                            vec(A.CCS[3])::Vector{Complex64})::SparseMatrixCSC{Complex64, Int64}
+                            vec(A.CCS[3])::Vector{ComplexF64})::SparseMatrixCSC{ComplexF64, Int64}
     end
     return r
 end
